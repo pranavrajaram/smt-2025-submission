@@ -6,4 +6,4 @@ Files:
 - `master-notebook.ipynb`: Our full code for this project, condensed into one notebook. 
 - `dashboard.R`: The code used to generate our cutoff evaluation dashboard
 - `animation-app.R`: The code we used to easily animate plays to manually check our work.
-- `Paper.pdf`: Our full paper explaining our project.
+- `SMT_Data_Challenge_2025_Paper.pdf`: Our full paper explaining our project.
