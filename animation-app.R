@@ -10,7 +10,6 @@ data_directory <- "~/SMT-Data-Challenge-2025"
 
 ui <- fluidPage(
   titlePanel("SMT Data Challenge Play Animation Viewer"),
-  h3('By: Pranav Rajaram | @_pranavrajaram'),
   p('Animations take about 10 seconds to load.'),
   sidebarLayout(
     sidebarPanel(
