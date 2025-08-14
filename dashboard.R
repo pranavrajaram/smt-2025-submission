@@ -91,7 +91,8 @@ ui <- dashboardPage(
 )
 
 server <- function(input, output) {
-
+  ### TEAM TAB ###
+  # TEAM VALUEBOXES
   output$team_plays <- renderValueBox({
     plays <- team_df %>% filter(fielding_team == input$team_select) %>% pull(total_cutoff_plays)
     valueBox(plays, "Total Plays", icon = icon("baseball-ball"), color = "blue")
@@ -107,6 +108,7 @@ server <- function(input, output) {
     valueBox(round(loss, 3), "Avg Run Value Lost", icon = icon("chart-line"), color = "red")
   })
   
+  # TEAM PLOTS with highlighting for selected team:
   output$arm_strength_table <- renderDataTable({
     stats %>%
       filter(fielding_team == input$team_select) %>%
@@ -165,7 +167,8 @@ server <- function(input, output) {
       )
   })
   
-
+  ### FIELDER TAB ###
+  # FIELDER VALUEBOXES
   output$fielder_plays <- renderValueBox({
     plays <- fielder_df %>% filter(cutoff_id == input$fielder_select) %>% pull(total_actions) %>% first()
     valueBox(plays, "Total Plays", icon = icon("person-running"), color = "blue")
@@ -206,6 +209,7 @@ server <- function(input, output) {
     library(dplyr)
     library(forcats)
     
+    # Compute percentiles
     percentiles <- fielder_df %>%
       ungroup() %>%
       mutate(
@@ -221,18 +225,21 @@ server <- function(input, output) {
                         ev_lost_pct = "Run Value Saved"),
         percentile = round(percentile * 100),
         bar_fill = case_when(
-          percentile >= 75 ~ "#d7191c", 
-          percentile >= 40 ~ "#abd9e9",   
-          TRUE ~ "#2c7bb6"              
+          percentile >= 75 ~ "#d7191c",  # Great - red
+          percentile >= 40 ~ "#abd9e9",  # Average - light blue
+          TRUE ~ "#2c7bb6"              # Poor - dark blue
         )
       )
     
     ggplot(percentiles, aes(x = percentile, y = fct_rev(metric))) +
-       geom_segment(aes(x = 0, xend = percentile, y = metric, yend = metric),
+      # Lollipop line
+      geom_segment(aes(x = 0, xend = percentile, y = metric, yend = metric),
                    color = "gray70", size = 10) +
-       geom_point(aes(color = bar_fill), size = 20) +
+      # Circle at end
+      geom_point(aes(color = bar_fill), size = 20) +
       geom_text(aes(label = percentile), color = "white", fontface = "bold", size = 6) +
-       scale_x_continuous(
+      # POOR, AVERAGE, GREAT axis labels
+      scale_x_continuous(
         limits = c(0, 100),
         breaks = c(0, 50, 100),
         labels = c("POOR", "AVERAGE", "GREAT")
@@ -253,7 +260,8 @@ server <- function(input, output) {
   
   
   
-   output$fielder_mistake_plot <- renderPlot({
+  # FIELDER MISTAKES: Show most common mistakes for selected fielder.
+  output$fielder_mistake_plot <- renderPlot({
     fielder_mistakes <- all_mistakes %>%
       filter(cutoff_id == input$fielder_select, !is.na(mistake_type))
     
@@ -274,7 +282,8 @@ server <- function(input, output) {
       )
   })
   
-   output$overall_mistake_plot <- renderPlot({
+  # Overall mistakes across all fielders
+  output$overall_mistake_plot <- renderPlot({
     overall <- all_mistakes %>%
       filter(!is.na(mistake_type)) %>%
       group_by(mistake_type) %>%
